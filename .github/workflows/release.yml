@@ -37,7 +37,7 @@ jobs:
         # With pending changesets this opens/updates the versioning PR. With
         # none (that PR was just merged) it builds and publishes what changed,
         # signed with provenance, and tags the release.
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           # Not `pnpm version`: that name is pnpm's own command, which would run
           # instead of the script and change nothing.
