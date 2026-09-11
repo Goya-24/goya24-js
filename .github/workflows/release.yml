@@ -39,7 +39,9 @@ jobs:
         # signed with provenance, and tags the release.
         uses: changesets/action@v1
         with:
-          version: pnpm version
+          # Not `pnpm version`: that name is pnpm's own command, which would run
+          # instead of the script and change nothing.
+          version: pnpm version-packages
           publish: pnpm release
           commit: "chore(release): version packages"
           title: "chore(release): version packages"

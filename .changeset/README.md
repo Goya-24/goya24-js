@@ -5,7 +5,7 @@ markdown file in this folder saying which packages changed and how much
 (`patch`, `minor`, `major`). Run `pnpm changeset` and answer the prompts; the
 file goes in with your pull request.
 
-On merge to `main`, the release workflow opens (or updates) a "Version
+On merge to `main`, the release workflow (`pnpm version-packages`, then `pnpm release`) opens (or updates) a "Version
 Packages" pull request that bumps versions and writes the changelogs from
 those files. Merging that PR publishes to npm with provenance.
 
