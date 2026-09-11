@@ -38,6 +38,9 @@ jobs:
         # a 404 that does not say "token". Prints who the token is and what
         # it may publish; neither is a secret.
         run: |
+          # Shape only, never the value: an empty secret and a pasted newline
+          # both look like "invalid token" from the outside.
+          echo "secret length: ${#NPM_TOKEN}, starts with: ${NPM_TOKEN:0:4}, whitespace inside: $([[ "$NPM_TOKEN" =~ [[:space:]] ]] && echo yes || echo no)"
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "token belongs to: $(npm whoami)"
           echo "organizations:"; npm org ls goya24 --json || echo "(not a member of goya24, or the token cannot read it)"
