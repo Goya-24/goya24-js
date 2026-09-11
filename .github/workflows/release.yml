@@ -41,10 +41,12 @@ jobs:
           # Shape only, never the value: an empty secret and a pasted newline
           # both look like "invalid token" from the outside.
           echo "secret length: ${#NPM_TOKEN}, starts with: ${NPM_TOKEN:0:4}, whitespace inside: $([[ "$NPM_TOKEN" =~ [[:space:]] ]] && echo yes || echo no)"
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "token belongs to: $(npm whoami)"
           echo "organizations:"; npm org ls goya24 --json || echo "(not a member of goya24, or the token cannot read it)"
         env:
+          # setup-node wrote an npmrc that reads NODE_AUTH_TOKEN and pointed npm
+          # at it; a token under any other name is invisible to npm.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create the Version Packages PR, or publish
@@ -61,5 +63,6 @@ jobs:
           title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
