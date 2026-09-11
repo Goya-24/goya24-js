@@ -1,6 +1,6 @@
 {
   "name": "@goya24/messenger",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Load and control the goya24 support messenger from any JavaScript page: open it, identify the signed-in customer, listen for unread replies.",
   "license": "MIT",
   "author": "Goya24",

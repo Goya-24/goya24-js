@@ -1,6 +1,6 @@
 {
   "name": "@goya24/react",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "The goya24 support messenger for React and Next.js: a component that mounts it, a provider and a hook that control it.",
   "license": "MIT",
   "author": "Goya24",
