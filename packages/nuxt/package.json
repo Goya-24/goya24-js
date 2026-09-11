@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@nuxt/schema": "^3.15.0",
-    "nuxt": "^3.15.0"
+    "nuxt": "^4.5.2"
   },
   "peerDependencies": {
     "nuxt": ">=3.8"
