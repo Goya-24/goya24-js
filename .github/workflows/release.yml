@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write # the Version Packages PR and the GitHub release
+  pull-requests: write
+  id-token: write # npm provenance
+
+concurrency: release-${{ github.ref }}
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    if: github.repository == 'Goya-24/goya24-js'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Create the Version Packages PR, or publish
+        # With pending changesets this opens/updates the versioning PR. With
+        # none (that PR was just merged) it builds and publishes what changed,
+        # signed with provenance, and tags the release.
+        uses: changesets/action@v1
+        with:
+          version: pnpm version
+          publish: pnpm release
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"

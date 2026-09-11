@@ -1,0 +1,64 @@
+{
+  "name": "@goya24/nuxt",
+  "version": "0.1.0",
+  "description": "Nuxt module for the goya24 support messenger: the key from runtime config, the plugin on the client, `useGoya24()` everywhere.",
+  "license": "MIT",
+  "author": "Goya24",
+  "homepage": "https://github.com/Goya-24/goya24-js/tree/main/packages/nuxt#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Goya-24/goya24-js.git",
+    "directory": "packages/nuxt"
+  },
+  "bugs": {
+    "url": "https://github.com/Goya-24/goya24-js/issues"
+  },
+  "keywords": [
+    "goya24",
+    "nuxt",
+    "nuxt-module",
+    "vue",
+    "customer-support",
+    "chat-widget",
+    "messenger",
+    "persian"
+  ],
+  "type": "module",
+  "main": "./dist/module.cjs",
+  "module": "./dist/module.js",
+  "types": "./dist/module.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js",
+      "require": "./dist/module.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@goya24/messenger": "workspace:^",
+    "@goya24/vue": "workspace:^",
+    "@nuxt/kit": "^3.15.0"
+  },
+  "devDependencies": {
+    "@nuxt/schema": "^3.15.0",
+    "nuxt": "^3.15.0"
+  },
+  "peerDependencies": {
+    "nuxt": ">=3.8"
+  }
+}

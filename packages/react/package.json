@@ -1,0 +1,58 @@
+{
+  "name": "@goya24/react",
+  "version": "0.1.0",
+  "description": "The goya24 support messenger for React and Next.js: a component that mounts it, a provider and a hook that control it.",
+  "license": "MIT",
+  "author": "Goya24",
+  "homepage": "https://github.com/Goya-24/goya24-js/tree/main/packages/react#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Goya-24/goya24-js.git",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/Goya-24/goya24-js/issues"
+  },
+  "keywords": [
+    "goya24",
+    "react",
+    "nextjs",
+    "customer-support",
+    "chat-widget",
+    "messenger",
+    "persian"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@goya24/messenger": "workspace:^"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}

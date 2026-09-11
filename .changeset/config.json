@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.5/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "Goya-24/goya24-js" }],
+  "commit": false,
+  "fixed": [],
+  "linked": [["@goya24/messenger", "@goya24/react", "@goya24/vue", "@goya24/nuxt"]],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["example-*"]
+}

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+.turbo/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# examples
+examples/**/.next/
+examples/**/.nuxt/
+examples/**/.output/
+examples/**/dist/

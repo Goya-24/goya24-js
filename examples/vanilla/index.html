@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>goya24 — plain JavaScript example</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 3rem;
+        line-height: 1.8;
+      }
+      button {
+        font: inherit;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.6rem;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+      #badge:not(:empty) {
+        margin-inline-start: 0.4rem;
+        background: #10b981;
+        color: #fff;
+        border-radius: 999px;
+        padding: 0 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>فروشگاه نمونه</h1>
+    <p>دکمهٔ زیر پیام‌رسان را از کد خودِ صفحه باز می‌کند، نه از لانچر پیش‌فرض.</p>
+    <button id="support">پشتیبانی<span id="badge"></span></button>
+    <p id="state"></p>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

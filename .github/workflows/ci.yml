@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        # The version comes from `packageManager` in package.json.
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+        if: matrix.node == 20
+
+      - run: pnpm typecheck
+
+      - run: pnpm test:coverage
+
+      - run: pnpm build
+
+      - name: Bundle size
+        if: matrix.node == 20
+        run: pnpm size
+
+      - name: Publish dry run
+        # What `npm publish` would ship, checked on every change so a broken
+        # `files` or `exports` field is caught before a release.
+        if: matrix.node == 20
+        run: |
+          for pkg in packages/*; do
+            echo "::group::$pkg"
+            (cd "$pkg" && npm pack --dry-run 2>&1 | tail -20)
+            echo "::endgroup::"
+          done
+
+      - uses: codecov/codecov-action@v4
+        if: matrix.node == 20
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  examples:
+    name: Build the examples
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm examples:build
