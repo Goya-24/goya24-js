@@ -14,6 +14,12 @@ Thanks for looking. This repo holds the goya24 JavaScript SDK: a core package an
 - `pnpm build` produces `dist/` for every package with tsup; `pnpm size` checks the gzipped size against the limits in the root `package.json`. A change that grows a package past its limit needs a reason in the PR.
 - The examples under `examples/` are real apps that CI builds. If you change an API, update the example that uses it.
 
+## The public API is written down
+
+`api/<package>.d.ts` is a copy of each package's built type declarations, and CI fails when the build no longer matches it. That is deliberate: anything a user could have written code against is visible in the pull request as a diff, and cannot change by accident. When a change to it is meant, run `pnpm api`, commit the updated report, and pick the bump in the changeset honestly — an added export is a minor, a removed or narrowed one is a major.
+
+`pnpm publish:check` runs [publint](https://publint.dev) and [arethetypeswrong](https://arethetypeswrong.github.io) on what `npm pack` would ship, so `exports`, the ESM/CJS pair and their types resolve for every kind of consumer.
+
 ## What a change needs
 
 1. **A test.** A bug fix comes with the test that would have caught it. A feature comes with tests for what it does and for what it refuses.

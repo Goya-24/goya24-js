@@ -46,16 +46,17 @@ jobs:
         if: matrix.node == 20
         run: pnpm size
 
-      - name: Publish dry run
-        # What `npm publish` would ship, checked on every change so a broken
-        # `files` or `exports` field is caught before a release.
+      - name: Public API report
+        # The built types must match api/*.d.ts. A change there is a change
+        # users can feel; it is reviewed as one, and named in a changeset.
         if: matrix.node == 20
-        run: |
-          for pkg in packages/*; do
-            echo "::group::$pkg"
-            (cd "$pkg" && npm pack --dry-run 2>&1 | tail -20)
-            echo "::endgroup::"
-          done
+        run: pnpm api:check
+
+      - name: What npm would ship
+        # publint checks the package.json a consumer sees; attw packs each
+        # package and resolves it the way node10, node16 and bundlers do.
+        if: matrix.node == 20
+        run: pnpm publish:check
 
       - uses: codecov/codecov-action@v4
         if: matrix.node == 20

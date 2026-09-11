@@ -29,9 +29,14 @@
   "types": "./dist/module.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/module.d.ts",
-      "import": "./dist/module.js",
-      "require": "./dist/module.cjs"
+      "import": {
+        "types": "./dist/module.d.ts",
+        "default": "./dist/module.js"
+      },
+      "require": {
+        "types": "./dist/module.d.cts",
+        "default": "./dist/module.cjs"
+      }
     },
     "./package.json": "./package.json"
   },

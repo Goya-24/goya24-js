@@ -15,6 +15,8 @@ export default tseslint.config(
       "examples/**/.nuxt/**",
       "examples/**/.output/**",
       "examples/**/next-env.d.ts",
+      // Copies of the built declarations, compared byte-for-byte in CI.
+      "api/**",
     ],
   },
   js.configs.recommended,
