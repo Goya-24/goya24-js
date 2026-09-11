@@ -3,6 +3,8 @@ name: Release
 on:
   push:
     branches: [main]
+  # Re-open the versioning PR by hand, e.g. after fixing a repository setting.
+  workflow_dispatch:
 
 permissions:
   contents: write # the Version Packages PR and the GitHub release
