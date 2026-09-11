@@ -33,6 +33,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Check the npm token
+        # Fail here, in words, rather than four times inside the publish with
+        # a 404 that does not say "token". Prints who the token is and what
+        # it may publish; neither is a secret.
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          echo "token belongs to: $(npm whoami)"
+          echo "organizations:"; npm org ls goya24 --json || echo "(not a member of goya24, or the token cannot read it)"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Create the Version Packages PR, or publish
         # With pending changesets this opens/updates the versioning PR. With
         # none (that PR was just merged) it builds and publishes what changed,
