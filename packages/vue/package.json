@@ -1,6 +1,6 @@
 {
   "name": "@goya24/vue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The goya24 support messenger for Vue 3: a plugin that mounts it and a composable that controls it.",
   "license": "MIT",
   "author": "Goya24",
