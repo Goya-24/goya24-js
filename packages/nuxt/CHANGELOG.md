@@ -1,5 +1,15 @@
 # @goya24/nuxt
 
+## 0.1.1
+
+### Patch Changes
+
+- [`5582a3d`](https://github.com/Goya-24/goya24-js/commit/5582a3dbf4285808cc035318a079f65df898d204) Thanks [@aryasadeghy](https://github.com/aryasadeghy)! - Types now resolve correctly for CommonJS consumers too: the `exports` map declares separate `types` for the `import` and `require` conditions (`index.d.ts` / `index.d.cts`), as publint and arethetypeswrong require.
+
+- Updated dependencies [[`5582a3d`](https://github.com/Goya-24/goya24-js/commit/5582a3dbf4285808cc035318a079f65df898d204)]:
+  - @goya24/messenger@0.1.1
+  - @goya24/vue@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
