@@ -36,7 +36,9 @@ interface MessengerOptions {
     locale?: Locale;
     theme?: Theme;
     alignment?: Alignment;
-    /** Distance from the corner, in px. Floors at 20. */
+    /** Distance from the corner, in px. Floors at 20. Also what lifts the
+     *  open panel past a close button of your own living in that corner —
+     *  your button's height plus its gap. */
     padding?: {
         x?: number;
         y?: number;
@@ -49,6 +51,10 @@ interface MessengerOptions {
      * messenger takes no space and no clicks, and the open panel has no bubble
      * under it either — its header's close button is the way out. Everything
      * else about the messenger is unchanged.
+     *
+     * The open panel still occupies the corner it opens in. If your own close
+     * button lives there too, raise it past the panel with `padding.y`; a
+     * button under the frame cannot be clicked.
      *
      * @default true
      */
