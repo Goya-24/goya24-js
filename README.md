@@ -195,6 +195,8 @@ messenger.on("open", () => swap(true));
 messenger.on("close", () => swap(false));
 ```
 
+A runnable page of exactly this — a site with its own open and close buttons in the corner — is [`examples/own-launcher`](examples/own-launcher).
+
 On a phone the panel is the whole screen, as in every messenger, so your button is not reachable while it is open; the panel's own close button is the way out there.
 
 ### `Messenger`
