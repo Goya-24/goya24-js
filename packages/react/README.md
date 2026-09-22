@@ -29,7 +29,7 @@ function SupportButton() {
 </Goya24Provider>;
 ```
 
-The package is a client module (`"use client"`), so it drops straight into a Next.js App Router layout. Props mirror the core's options (`origin`, `locale`, `theme`, `alignment`, `padding`, `user`) plus `onReady`, `onOpen`, `onClose`, `onUnread(count)` and `onError(reason)`. Changing `user` after mount announces the new person as a claim; a proven identity (`id` + `hash`) has to be present at mount.
+The package is a client module (`"use client"`), so it drops straight into a Next.js App Router layout. Props mirror the core's options (`origin`, `locale`, `theme`, `alignment`, `padding`, `launcher`, `user`) plus `onReady`, `onOpen`, `onClose`, `onUnread(count)` and `onError(reason)`. Changing `user` after mount announces the new person as a claim; a proven identity (`id` + `hash`) has to be present at mount.
 
 Full documentation in the [repository README](https://github.com/Goya-24/goya24-js#readme).
 

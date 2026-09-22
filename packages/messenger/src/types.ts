@@ -42,6 +42,18 @@ export interface MessengerOptions {
   alignment?: Alignment;
   /** Distance from the corner, in px. Floors at 20. */
   padding?: { x?: number; y?: number };
+  /**
+   * Whether the messenger draws its own launcher — the bubble in the corner.
+   *
+   * `false` takes it away for a site that has its own support button and
+   * opens the panel with `open()`: nothing is drawn in the corner, the shut
+   * messenger takes no space and no clicks, and the open panel has no bubble
+   * under it either — its header's close button is the way out. Everything
+   * else about the messenger is unchanged.
+   *
+   * @default true
+   */
+  launcher?: boolean;
   /** The signed-in customer, if any. Can also be given later with `identify()`. */
   user?: User;
 }

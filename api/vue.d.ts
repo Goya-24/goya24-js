@@ -22,6 +22,9 @@ declare const goya24Key: InjectionKey<Goya24>;
  * ```ts
  * app.use(createGoya24({ key: import.meta.env.VITE_GOYA24_KEY, locale: "fa" }));
  * ```
+ *
+ * A site with its own support button passes `launcher: false` and opens the
+ * panel from it: `const { open } = useGoya24()`.
  */
 declare function createGoya24(options: MessengerOptions): Plugin;
 /**

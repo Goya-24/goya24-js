@@ -110,12 +110,28 @@ describe("load()", () => {
     });
   });
 
+  it("hides our launcher only when asked, and never says so otherwise", () => {
+    load({ key: "d24_pk_abc", launcher: false });
+    expect(tag().dataset.launcher).toBe("none");
+
+    get()?.destroy();
+    delete window.dastyar24;
+    delete window.__dastyar24Loaded;
+    document.head.innerHTML = "";
+
+    // The default and an explicit `true` both leave the attribute off: the
+    // loader draws the bubble unless the tag says "none".
+    load({ key: "d24_pk_abc", launcher: true });
+    expect(tag().dataset.launcher).toBeUndefined();
+  });
+
   it("leaves out what was not given, and points at a custom origin", () => {
     load({ key: "d24_pk_abc", origin: "https://support.shop.example/" });
     const script = tag();
     expect(script.src).toBe("https://support.shop.example/widget.js");
     expect(script.dataset.locale).toBeUndefined();
     expect(script.dataset.user).toBeUndefined();
+    expect(script.dataset.launcher).toBeUndefined();
   });
 
   it("refuses a missing key or a bad origin before touching the page", () => {

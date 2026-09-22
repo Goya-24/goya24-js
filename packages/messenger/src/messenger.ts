@@ -138,6 +138,10 @@ class MessengerImpl implements Messenger {
     if (this.options.padding?.y !== undefined) {
       script.dataset.verticalPadding = String(this.options.padding.y);
     }
+    // Only ever written to turn the launcher off: the loader's default is to
+    // draw it, and an attribute saying "yes, the normal thing" is one more
+    // thing to get wrong in a tag manager.
+    if (this.options.launcher === false) script.dataset.launcher = "none";
     if (this.options.user) script.dataset.user = JSON.stringify(tagUser(this.options.user));
     script.addEventListener("load", () => {
       if (window.dastyar24) this.attach(window.dastyar24);

@@ -14,6 +14,8 @@ export default defineNuxtConfig({
 });
 ```
 
+Drew your own support button? `goya24: { launcher: false }` leaves ours out — nothing in the corner and nothing under the open panel — and `const { open } = useGoya24()` opens it.
+
 Put the key in the environment:
 
 ```sh
