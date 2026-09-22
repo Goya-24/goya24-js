@@ -16,6 +16,7 @@ messenger.on("unread", ({ count }) => (badge.textContent = count ? String(count)
 ```
 
 - `load(options)` puts the messenger on the page, or adopts a script tag that is already there. Idempotent.
+- `launcher: false` hides our bubble for a site that has its own support button — nothing in the corner, nothing under the open panel; you call `open()`.
 - `open()`, `close()`, `toggle()`, `identify(user)`, `destroy()`.
 - `on(event, handler)` for `ready`, `open`, `close`, `unread`, `error`; returns the unsubscribe.
 - `getState()` → `{ ready, open, unread }`; `ready` is a promise.

@@ -177,7 +177,25 @@ Puts the messenger on the page, or adopts one the site's script tag already inst
 | `theme`     | `"light" \| "dark"`          | the page's scheme    |
 | `alignment` | `"left" \| "right"`          | `"right"`            |
 | `padding`   | `{ x?: number; y?: number }` | `20`                 |
+| `launcher`  | `boolean`                    | `true`               |
 | `user`      | `User`                       | —                    |
+
+`launcher: false` is for a site that has drawn its own support button: our bubble is not drawn at all, the shut messenger takes no space and no clicks anywhere on the page, and the open panel has no bubble under it either — its header's close button is the way out. Open it yourself with `open()`, and follow `on("unread", …)` for a badge. Everything else about the messenger is unchanged.
+
+```ts
+const messenger = load({ key: "d24_pk_…", launcher: false });
+myButton.addEventListener("click", () => messenger.open());
+```
+
+**A close button of your own, in the same corner.** The open panel sits where your button is, and a button under our frame cannot be clicked. Lift the frame past it with `padding.y` — your button's height plus the gap it keeps — and swap your two buttons on the events:
+
+```ts
+const messenger = load({ key: "d24_pk_…", launcher: false, padding: { y: 104 } });
+messenger.on("open", () => swap(true));
+messenger.on("close", () => swap(false));
+```
+
+On a phone the panel is the whole screen, as in every messenger, so your button is not reachable while it is open; the panel's own close button is the way out there.
 
 ### `Messenger`
 

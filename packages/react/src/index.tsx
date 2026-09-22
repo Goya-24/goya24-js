@@ -60,6 +60,7 @@ function useMessenger(props: Goya24Props): Goya24Handle {
     theme,
     alignment,
     padding,
+    launcher,
     user,
     onReady,
     onOpen,
@@ -91,6 +92,7 @@ function useMessenger(props: Goya24Props): Goya24Handle {
     if (locale) options.locale = locale;
     if (theme) options.theme = theme;
     if (alignment) options.alignment = alignment;
+    if (launcher === false) options.launcher = false;
     if (paddingX !== undefined || paddingY !== undefined) {
       options.padding = {};
       if (paddingX !== undefined) options.padding.x = paddingX;
@@ -133,7 +135,7 @@ function useMessenger(props: Goya24Props): Goya24Handle {
       instance.destroy();
       messenger.current = null;
     };
-  }, [workspaceKey, origin, locale, theme, alignment, paddingX, paddingY]);
+  }, [workspaceKey, origin, locale, theme, alignment, paddingX, paddingY, launcher]);
 
   // A user who signs in after the messenger mounted is told about as a
   // claim. A proven identity (id + hash) has to be there at mount, because

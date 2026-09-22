@@ -82,6 +82,14 @@ describe("createGoya24()", () => {
     expect(messenger.destroy).toHaveBeenCalledOnce();
   });
 
+  it("carries launcher: false through to the messenger", () => {
+    const wrapper = mount(Button, {
+      global: { plugins: [createGoya24({ key: "d24_pk_abc", launcher: false })] },
+    });
+    expect(load).toHaveBeenCalledWith({ key: "d24_pk_abc", launcher: false });
+    wrapper.unmount();
+  });
+
   it("mirrors the state reactively and controls the messenger", async () => {
     const wrapper = mount(Button, {
       global: { plugins: [createGoya24({ key: "d24_pk_abc" })] },

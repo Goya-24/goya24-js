@@ -25,7 +25,7 @@ const { open, state } = useGoya24();
 </template>
 ```
 
-`useGoya24()` returns `open`, `close`, `toggle`, `identify(user)`, `destroy` and a reactive `state` (`ready`, `open`, `unread`). It is also available as `this.$goya24` in the Options API. The messenger mounts after `app.mount()` and is removed on `app.unmount()`; calls made during a component's `setup()` are kept until then.
+`useGoya24()` returns `open`, `close`, `toggle`, `identify(user)`, `destroy` and a reactive `state` (`ready`, `open`, `unread`). A site with its own bubble passes `launcher: false` to `createGoya24()` and opens the panel from it; ours is then not drawn at all. It is also available as `this.$goya24` in the Options API. The messenger mounts after `app.mount()` and is removed on `app.unmount()`; calls made during a component's `setup()` are kept until then.
 
 Full documentation in the [repository README](https://github.com/Goya-24/goya24-js#readme).
 

@@ -79,6 +79,16 @@ describe("<Goya24 />", () => {
     });
   });
 
+  it("passes launcher={false} on, and says nothing when it is left alone", () => {
+    const { rerender } = render(<Goya24 workspaceKey="d24_pk_abc" launcher={false} />);
+    expect(load).toHaveBeenLastCalledWith({ key: "d24_pk_abc", launcher: false });
+
+    // Putting our launcher back is a different messenger: it has to reload.
+    rerender(<Goya24 workspaceKey="d24_pk_abc" />);
+    expect(load).toHaveBeenLastCalledWith({ key: "d24_pk_abc" });
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+
   it("does not reload when only callbacks change, and destroys on unmount", () => {
     const { rerender, unmount } = render(<Goya24 workspaceKey="d24_pk_abc" onOpen={() => {}} />);
     rerender(<Goya24 workspaceKey="d24_pk_abc" onOpen={() => {}} />);
