@@ -1,5 +1,18 @@
 # @goya24/react
 
+## 0.2.0
+
+### Minor Changes
+
+- [#14](https://github.com/Goya-24/goya24-js/pull/14) [`559362e`](https://github.com/Goya-24/goya24-js/commit/559362e916f94c9fa8b044829da6bdf68f365b92) Thanks [@aryasadeghy](https://github.com/aryasadeghy)! - `launcher: false` hides the messenger's own bubble, for a site that has drawn its own support button: nothing is placed in the corner, the shut messenger takes no space and no clicks anywhere on the page, and the open panel has no bubble under it either — its header's close button is the way out. The panel is opened with `open()`, as it already could be. Every site that does not pass the option is unaffected.
+
+### Patch Changes
+
+- [`5582a3d`](https://github.com/Goya-24/goya24-js/commit/5582a3dbf4285808cc035318a079f65df898d204) Thanks [@aryasadeghy](https://github.com/aryasadeghy)! - Types now resolve correctly for CommonJS consumers too: the `exports` map declares separate `types` for the `import` and `require` conditions (`index.d.ts` / `index.d.cts`), as publint and arethetypeswrong require.
+
+- Updated dependencies [[`559362e`](https://github.com/Goya-24/goya24-js/commit/559362e916f94c9fa8b044829da6bdf68f365b92), [`5582a3d`](https://github.com/Goya-24/goya24-js/commit/5582a3dbf4285808cc035318a079f65df898d204)]:
+  - @goya24/messenger@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes
