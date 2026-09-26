@@ -18,6 +18,7 @@ function fakeLoader() {
     open: vi.fn(() => emit("state", { open: true })),
     close: vi.fn(() => emit("state", { open: false })),
     toggle: vi.fn(() => emit("state", { open: !state.open })),
+    update: vi.fn(),
     getState: () => ({ ...state }),
     on: vi.fn((name: string, handler: (detail: unknown) => void) => {
       let set = listeners.get(name);
@@ -89,6 +90,7 @@ describe("load()", () => {
         hash: "h1",
         email: "s@example.com",
         name: "Sara",
+        phone: "09123456789",
         traits: { plan: "growth" },
       },
     });
@@ -101,11 +103,14 @@ describe("load()", () => {
     expect(script.dataset.alignment).toBe("left");
     expect(script.dataset.horizontalPadding).toBe("24");
     expect(script.dataset.verticalPadding).toBe("32");
+    // The phone rides with the rest: with id and hash the loader puts it in
+    // the signed boot, where it used to be dropped before it got there.
     expect(JSON.parse(script.dataset.user!)).toEqual({
       id: "u1",
       hash: "h1",
       email: "s@example.com",
       name: "Sara",
+      phone: "09123456789",
       traits: { plan: "growth" },
     });
   });
@@ -168,7 +173,13 @@ describe("calls before the loader arrives", () => {
     const loader = fakeLoader();
     const messenger = load({ key: "d24_pk_abc" });
     messenger.open();
-    messenger.identify({ email: "s@example.com", name: "Sara", traits: { plan: "growth" } });
+    messenger.identify({
+      email: "s@example.com",
+      name: "Sara",
+      phone: "09123456789",
+      traits: { plan: "growth" },
+    });
+    messenger.update({ launcher: false });
     expect(loader.api.open).not.toHaveBeenCalled();
 
     arrive(loader);
@@ -177,8 +188,64 @@ describe("calls before the loader arrives", () => {
     expect(loader.api.identify).toHaveBeenCalledWith({
       email: "s@example.com",
       name: "Sara",
+      phone: "09123456789",
       attributes: { plan: "growth" },
     });
+    expect(loader.api.update).toHaveBeenCalledWith({ launcher: false });
+  });
+});
+
+describe("update()", () => {
+  it("sends only the keys given, and null to hand one back to the workspace", () => {
+    const loader = fakeLoader();
+    const messenger = load({ key: "d24_pk_abc" });
+    arrive(loader);
+
+    messenger.update({ launcher: false });
+    messenger.update({ alignment: "left", padding: { y: 96 } });
+    messenger.update({ launcher: true, alignment: null, padding: null });
+    messenger.update({ padding: { x: null, y: 40 } });
+
+    expect(loader.api.update.mock.calls).toEqual([
+      [{ launcher: false }],
+      [{ alignment: "left", padding: { y: 96 } }],
+      [{ launcher: true, alignment: null, padding: null }],
+      [{ padding: { x: null, y: 40 } }],
+    ]);
+  });
+
+  it("refuses what the loader would ignore, and sends nothing for nothing", () => {
+    const loader = fakeLoader();
+    const messenger = load({ key: "d24_pk_abc" });
+    arrive(loader);
+
+    messenger.update({});
+    messenger.update(null as never);
+    messenger.update("left" as never);
+    messenger.update({ launcher: "none" as never });
+    messenger.update({ alignment: "center" as never });
+    messenger.update({ padding: 40 as never });
+    messenger.update({ padding: { x: "40px" as never, y: Number.NaN } });
+    expect(loader.api.update).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(5);
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('"left", "right" or null'));
+
+    // A bad key does not take the good ones with it.
+    messenger.update({ alignment: "center" as never, launcher: false });
+    expect(loader.api.update).toHaveBeenCalledWith({ launcher: false });
+  });
+
+  it("says once, and does not throw, when the loader is older than update()", () => {
+    const loader = fakeLoader();
+    window.dastyar24 = { identify: loader.api.identify, destroy: loader.api.destroy };
+    window.__dastyar24Loaded = true;
+    const messenger = load({ key: "d24_pk_abc" });
+
+    messenger.update({ launcher: false });
+    messenger.update({ launcher: true });
+
+    expect(console.warn).toHaveBeenCalledOnce();
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("has no update()"));
   });
 });
 
@@ -273,7 +340,9 @@ describe("destroy()", () => {
     expect(get()).toBeNull();
     // Nothing after the end: calls are dropped, not queued for a ghost.
     messenger.open();
+    messenger.update({ launcher: false });
     expect(loader.api.open).not.toHaveBeenCalled();
+    expect(loader.api.update).not.toHaveBeenCalled();
     expect(messenger.getState()).toEqual({ ready: false, open: false, unread: 0 });
 
     const again = load({ key: "d24_pk_abc" });

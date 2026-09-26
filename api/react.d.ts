@@ -1,7 +1,7 @@
 import * as react from 'react';
 import { ReactNode } from 'react';
-import { MessengerOptions, User } from '@goya24/messenger';
-export { Alignment, Locale, Messenger, MessengerEvent, MessengerEvents, MessengerOptions, MessengerState, Theme, User } from '@goya24/messenger';
+import { MessengerOptions, User, UpdateOptions } from '@goya24/messenger';
+export { Alignment, Locale, Messenger, MessengerEvent, MessengerEvents, MessengerOptions, MessengerState, Theme, UpdateOptions, User } from '@goya24/messenger';
 
 interface Goya24Props extends Omit<MessengerOptions, "key"> {
     /** The workspace's public key, from Settings → Install. */
@@ -19,6 +19,13 @@ interface Goya24Handle {
     toggle: () => void;
     /** Tell the messenger who is signed in. Prefer the `user` prop for a proven identity. */
     identify: (user: User) => void;
+    /**
+     * Move the messenger, or take our launcher away and bring it back, without
+     * reloading it — from a page deep under the provider that wants the bubble
+     * gone while it is on screen. The `launcher`, `alignment` and `padding`
+     * props do the same from where the messenger is mounted.
+     */
+    update: (options: UpdateOptions) => void;
     /** Whether the messenger has booted. */
     ready: boolean;
     isOpen: boolean;

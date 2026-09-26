@@ -17,6 +17,7 @@ function fakeMessenger() {
     close: vi.fn(),
     toggle: vi.fn(),
     identify: vi.fn(),
+    update: vi.fn(),
     destroy: vi.fn(),
     getState: () => ({ ...state }),
     ready: Promise.resolve(),
@@ -143,7 +144,31 @@ describe("the handle", () => {
 
     wrapper.vm.$goya24.destroy();
     wrapper.vm.$goya24.open();
+    wrapper.vm.$goya24.update({ launcher: true });
     expect(messenger.open).not.toHaveBeenCalled();
+    expect(messenger.update).not.toHaveBeenCalled();
     expect(wrapper.vm.$goya24.state.value).toEqual({ ready: false, open: false, unread: 0 });
+  });
+
+  it("update() moves the messenger already there, including from a setup() before mount", () => {
+    // A route that wants our bubble gone asks while it is being set up —
+    // before the app has mounted and the messenger exists. Kept, then sent.
+    const AppPage = defineComponent({
+      setup() {
+        const goya = useGoya24();
+        goya.update({ launcher: false, alignment: "left" });
+        return () => h("button", { onClick: () => goya.update({ launcher: null }) }, "home");
+      },
+    });
+    const wrapper = mount(AppPage, {
+      global: { plugins: [createGoya24({ key: "d24_pk_abc" })] },
+    });
+    expect(load).toHaveBeenCalledOnce();
+    expect(messenger.update).toHaveBeenCalledWith({ launcher: false, alignment: "left" });
+
+    wrapper.find("button").trigger("click");
+    expect(messenger.update).toHaveBeenLastCalledWith({ launcher: null });
+    expect(load).toHaveBeenCalledOnce();
+    wrapper.unmount();
   });
 });

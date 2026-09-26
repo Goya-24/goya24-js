@@ -14,7 +14,7 @@ export default defineNuxtConfig({
 });
 ```
 
-Drew your own support button? `goya24: { launcher: false }` leaves ours out — nothing in the corner and nothing under the open panel — and `const { open } = useGoya24()` opens it.
+Drew your own support button? `goya24: { launcher: false }` leaves ours out — nothing in the corner and nothing under the open panel — and `const { open } = useGoya24()` opens it. Only on some pages? `useGoya24().update({ launcher: false })` in that page's `setup()`, and `{ launcher: true }` where it should come back: the messenger is not reloaded.
 
 Put the key in the environment:
 

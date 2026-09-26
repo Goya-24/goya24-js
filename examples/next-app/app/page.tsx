@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SupportButton } from "./support-button";
 
 export default function Page() {
@@ -9,6 +10,9 @@ export default function Page() {
         می‌کند.
       </p>
       <SupportButton />
+      <p>
+        <Link href="/account">حساب کاربری</Link>
+      </p>
     </main>
   );
 }

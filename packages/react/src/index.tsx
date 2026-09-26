@@ -8,7 +8,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { load, type Messenger, type MessengerOptions, type User } from "@goya24/messenger";
+import {
+  load,
+  type Messenger,
+  type MessengerOptions,
+  type UpdateOptions,
+  type User,
+} from "@goya24/messenger";
 
 export type {
   Alignment,
@@ -19,6 +25,7 @@ export type {
   MessengerOptions,
   MessengerState,
   Theme,
+  UpdateOptions,
   User,
 } from "@goya24/messenger";
 
@@ -39,6 +46,13 @@ export interface Goya24Handle {
   toggle: () => void;
   /** Tell the messenger who is signed in. Prefer the `user` prop for a proven identity. */
   identify: (user: User) => void;
+  /**
+   * Move the messenger, or take our launcher away and bring it back, without
+   * reloading it — from a page deep under the provider that wants the bubble
+   * gone while it is on screen. The `launcher`, `alignment` and `padding`
+   * props do the same from where the messenger is mounted.
+   */
+  update: (options: UpdateOptions) => void;
   /** Whether the messenger has booted. */
   ready: boolean;
   isOpen: boolean;
@@ -79,29 +93,41 @@ function useMessenger(props: Goya24Props): Goya24Handle {
   const callbacks = useRef({ onReady, onOpen, onClose, onUnread, onError });
   callbacks.current = { onReady, onOpen, onClose, onUnread, onError };
 
-  // Options that are part of the boot URL and the tag. Changing them means
-  // a different messenger, so they are the effect's dependencies; the user
-  // is handled separately below, because it can change without a reload.
+  // Options that are part of the boot URL. Changing them means a different
+  // messenger, so they are the effect's dependencies. Where it sits and
+  // whether our launcher is drawn are not: a route that wants the bubble
+  // gone, or a page that wants it on the other side, gets `update()` below
+  // rather than a reload that would drop an open conversation. They are
+  // read through a ref when the messenger mounts, and the user is handled
+  // separately below for the same reason.
   const paddingX = padding?.x;
   const paddingY = padding?.y;
+  const layout = { launcher, alignment, paddingX, paddingY };
+  const latestLayout = useRef(layout);
+  latestLayout.current = layout;
+  // What the messenger on the page was last given, so a render only sends
+  // what changed since.
+  const appliedLayout = useRef<typeof layout | null>(null);
   const initialUser = useRef(user);
 
   useEffect(() => {
+    const now = latestLayout.current;
     const options: MessengerOptions = { key: workspaceKey };
     if (origin) options.origin = origin;
     if (locale) options.locale = locale;
     if (theme) options.theme = theme;
-    if (alignment) options.alignment = alignment;
-    if (launcher === false) options.launcher = false;
-    if (paddingX !== undefined || paddingY !== undefined) {
+    if (now.alignment) options.alignment = now.alignment;
+    if (now.launcher === false) options.launcher = false;
+    if (now.paddingX !== undefined || now.paddingY !== undefined) {
       options.padding = {};
-      if (paddingX !== undefined) options.padding.x = paddingX;
-      if (paddingY !== undefined) options.padding.y = paddingY;
+      if (now.paddingX !== undefined) options.padding.x = now.paddingX;
+      if (now.paddingY !== undefined) options.padding.y = now.paddingY;
     }
     if (initialUser.current) options.user = initialUser.current;
 
     const instance = load(options);
     messenger.current = instance;
+    appliedLayout.current = now;
     const known = instance.getState();
     setReady(known.ready);
     setOpen(known.open);
@@ -134,8 +160,25 @@ function useMessenger(props: Goya24Props): Goya24Handle {
       for (const off of offs) off();
       instance.destroy();
       messenger.current = null;
+      appliedLayout.current = null;
     };
-  }, [workspaceKey, origin, locale, theme, alignment, paddingX, paddingY, launcher]);
+  }, [workspaceKey, origin, locale, theme]);
+
+  // A prop that went away is sent as null: the workspace's own setting, or
+  // the default, takes over again — the same as never having passed it.
+  useEffect(() => {
+    const instance = messenger.current;
+    const last = appliedLayout.current;
+    if (!instance || !last) return;
+    const changes: UpdateOptions = {};
+    if (launcher !== last.launcher) changes.launcher = launcher ?? null;
+    if (alignment !== last.alignment) changes.alignment = alignment ?? null;
+    if (paddingX !== last.paddingX || paddingY !== last.paddingY) {
+      changes.padding = { x: paddingX ?? null, y: paddingY ?? null };
+    }
+    appliedLayout.current = { launcher, alignment, paddingX, paddingY };
+    if (Object.keys(changes).length) instance.update(changes);
+  }, [launcher, alignment, paddingX, paddingY]);
 
   // A user who signs in after the messenger mounted is told about as a
   // claim. A proven identity (id + hash) has to be there at mount, because
@@ -152,10 +195,11 @@ function useMessenger(props: Goya24Props): Goya24Handle {
   const close = useCallback(() => messenger.current?.close(), []);
   const toggle = useCallback(() => messenger.current?.toggle(), []);
   const identify = useCallback((who: User) => messenger.current?.identify(who), []);
+  const update = useCallback((options: UpdateOptions) => messenger.current?.update(options), []);
 
   return useMemo(
-    () => ({ open, close, toggle, identify, ready, isOpen, unreadCount }),
-    [open, close, toggle, identify, ready, isOpen, unreadCount],
+    () => ({ open, close, toggle, identify, update, ready, isOpen, unreadCount }),
+    [open, close, toggle, identify, update, ready, isOpen, unreadCount],
   );
 }
 

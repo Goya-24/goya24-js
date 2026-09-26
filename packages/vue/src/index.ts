@@ -12,6 +12,7 @@ import {
   type Messenger,
   type MessengerOptions,
   type MessengerState,
+  type UpdateOptions,
   type User,
 } from "@goya24/messenger";
 
@@ -24,6 +25,7 @@ export type {
   MessengerOptions,
   MessengerState,
   Theme,
+  UpdateOptions,
   User,
 } from "@goya24/messenger";
 
@@ -33,6 +35,12 @@ export interface Goya24 {
   toggle: () => void;
   /** Tell the messenger who is signed in. Prefer `user` in the plugin options for a proven identity. */
   identify: (user: User) => void;
+  /**
+   * Move the messenger, or take our launcher away and bring it back, without
+   * reloading it — from a route's `setup()` that wants the bubble gone while
+   * it is on screen, say. The plugin's options are where it starts.
+   */
+  update: (options: UpdateOptions) => void;
   /** The messenger's state, reactive: `ready`, `open`, `unread`. */
   state: Readonly<Ref<MessengerState>>;
   /** Remove the messenger from the page. The plugin does this when the app unmounts. */
@@ -99,6 +107,7 @@ export function createGoya24(options: MessengerOptions): Plugin {
         close: () => call((m) => m.close()),
         toggle: () => call((m) => m.toggle()),
         identify: (user) => call((m) => m.identify(user)),
+        update: (options) => call((m) => m.update(options)),
         state: readonly(state),
         destroy,
       };

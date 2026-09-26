@@ -6,6 +6,7 @@ import type {
   MessengerOptions,
   MessengerState,
   Unsubscribe,
+  UpdateOptions,
   User,
 } from "./types";
 
@@ -84,6 +85,7 @@ function tagUser(user: User): Record<string, unknown> {
   if (user.hash) out.hash = user.hash;
   if (user.email) out.email = user.email;
   if (user.name) out.name = user.name;
+  if (user.phone) out.phone = user.phone;
   if (user.plan) out.plan = user.plan;
   if (user.traits && Object.keys(user.traits).length) out.traits = user.traits;
   return out;
@@ -94,9 +96,45 @@ function claim(user: User): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   if (user.email) out.email = user.email;
   if (user.name) out.name = user.name;
+  if (user.phone) out.phone = user.phone;
   if (user.plan) out.plan = user.plan;
   out.attributes = user.traits ?? {};
   return out;
+}
+
+/**
+ * The `update()` payload: the keys given, each one checked. A value the
+ * loader would ignore is dropped here with a warning rather than sent, so a
+ * typo says so on the site's own console instead of doing nothing quietly.
+ * `null` goes through: it hands the key back to the workspace's setting.
+ */
+function layout(options: UpdateOptions): Record<string, unknown> | null {
+  if (!options || typeof options !== "object") return null;
+  const out: Record<string, unknown> = {};
+  const { launcher, alignment, padding } = options;
+  if (launcher === null || typeof launcher === "boolean") out.launcher = launcher;
+  else if (launcher !== undefined) refuse("launcher is true, false or null");
+  if (alignment === null || alignment === "left" || alignment === "right") {
+    out.alignment = alignment;
+  } else if (alignment !== undefined) refuse('alignment is "left", "right" or null');
+  if (padding === null) out.padding = null;
+  else if (padding !== undefined && typeof padding !== "object") {
+    refuse("padding is { x, y } in px, or null");
+  } else if (padding) {
+    const sides: Record<string, number | null> = {};
+    for (const axis of ["x", "y"] as const) {
+      const value = padding[axis];
+      if (value === null || (typeof value === "number" && Number.isFinite(value))) {
+        sides[axis] = value;
+      } else if (value !== undefined) refuse(`padding.${axis} is a number of px, or null`);
+    }
+    if (Object.keys(sides).length) out.padding = sides;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+function refuse(what: string): void {
+  console.warn(`@goya24/messenger: update() left a value out — ${what}.`);
 }
 
 class MessengerImpl implements Messenger {
@@ -110,6 +148,7 @@ class MessengerImpl implements Messenger {
   private readonly detach: Array<() => void> = [];
   private state: MessengerState = { ready: false, open: false, unread: 0 };
   private resolveReady: () => void = () => {};
+  private warnedNoUpdate = false;
 
   constructor(readonly options: Normalised) {
     this.ready = new Promise<void>((resolve) => {
@@ -229,6 +268,25 @@ class MessengerImpl implements Messenger {
   identify(user: User): void {
     if (!user || typeof user !== "object") return;
     this.call((api) => api.identify(claim(user)));
+  }
+
+  update(options: UpdateOptions): void {
+    const changes = layout(options);
+    if (!changes) return;
+    this.call((api) => {
+      if (api.update) {
+        api.update(changes);
+        return;
+      }
+      // A widget.js from before update() — a self-hosted goya24 that has not
+      // caught up. Once, rather than on every route change.
+      if (this.warnedNoUpdate) return;
+      this.warnedNoUpdate = true;
+      console.warn(
+        `@goya24/messenger: the widget.js at ${this.options.origin} has no update(); ` +
+          "the messenger was left where it was. Pass the options to load() instead.",
+      );
+    });
   }
 
   on<E extends MessengerEvent>(

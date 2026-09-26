@@ -9,5 +9,6 @@ export type {
   MessengerState,
   Theme,
   Unsubscribe,
+  UpdateOptions,
   User,
 } from "./types";
