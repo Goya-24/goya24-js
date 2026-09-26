@@ -1,6 +1,6 @@
 # @goya24/messenger
 
-Load and control the [goya24](https://goya24.com) support messenger from any page. Framework-free, ~1.4 kB, TypeScript.
+Load and control the [goya24](https://goya24.com) support messenger from any page. Framework-free, ~1.8 kB, TypeScript.
 
 ```sh
 npm i @goya24/messenger
@@ -18,6 +18,7 @@ messenger.on("unread", ({ count }) => (badge.textContent = count ? String(count)
 - `load(options)` puts the messenger on the page, or adopts a script tag that is already there. Idempotent.
 - `launcher: false` hides our bubble for a site that has its own support button — nothing in the corner, nothing under the open panel; you call `open()`.
 - `open()`, `close()`, `toggle()`, `identify(user)`, `destroy()`.
+- `update({ launcher, alignment, padding })` moves it, or hides and shows our bubble, after load and without a reload — a route that wants the bubble gone, a page that wants it on the other side. `get()` returns the page's messenger from anywhere; `null` hands a key back to the workspace's setting.
 - `on(event, handler)` for `ready`, `open`, `close`, `unread`, `error`; returns the unsubscribe.
 - `getState()` → `{ ready, open, unread }`; `ready` is a promise.
 - Calls made before the messenger has booted are queued and run in order.

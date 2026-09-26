@@ -1,6 +1,6 @@
 # @goya24/vue
 
-The [goya24](https://goya24.com) support messenger for Vue 3. A plugin that mounts it, a composable that controls it. ~0.5 kB on top of `@goya24/messenger`.
+The [goya24](https://goya24.com) support messenger for Vue 3. A plugin that mounts it, a composable that controls it. ~0.6 kB on top of `@goya24/messenger`.
 
 ```sh
 npm i @goya24/vue
@@ -25,7 +25,7 @@ const { open, state } = useGoya24();
 </template>
 ```
 
-`useGoya24()` returns `open`, `close`, `toggle`, `identify(user)`, `destroy` and a reactive `state` (`ready`, `open`, `unread`). A site with its own bubble passes `launcher: false` to `createGoya24()` and opens the panel from it; ours is then not drawn at all. It is also available as `this.$goya24` in the Options API. The messenger mounts after `app.mount()` and is removed on `app.unmount()`; calls made during a component's `setup()` are kept until then.
+`useGoya24()` returns `open`, `close`, `toggle`, `identify(user)`, `update(options)`, `destroy` and a reactive `state` (`ready`, `open`, `unread`). A site with its own bubble passes `launcher: false` to `createGoya24()` and opens the panel from it; ours is then not drawn at all. `update({ launcher, alignment, padding })` changes those after load without a reload — from the `setup()` of a route that wants the bubble gone, say; `null` hands a key back to the workspace's setting. It is also available as `this.$goya24` in the Options API. The messenger mounts after `app.mount()` and is removed on `app.unmount()`; calls made during a component's `setup()` are kept until then.
 
 Full documentation in the [repository README](https://github.com/Goya-24/goya24-js#readme).
 

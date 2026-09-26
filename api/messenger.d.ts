@@ -2,8 +2,9 @@
 type Locale = "fa" | "en";
 /** The messenger's theme. Unset, it matches the page's own colour scheme. */
 type Theme = "light" | "dark";
-/** Which bottom corner the launcher sits in. Ignored on phones, where it is
- *  always bottom-right. */
+/** Which bottom corner the messenger sits in, on phones too. Unset, the
+ *  workspace's own choice in Settings → Messenger decides, and failing that
+ *  the right. */
 type Alignment = "left" | "right";
 /**
  * Who is signed in on your site.
@@ -20,6 +21,8 @@ interface User {
     hash?: string;
     email?: string;
     name?: string;
+    /** Their phone number, as your site has it. Shown to the agent and to your team. */
+    phone?: string;
     /** The plan they are on, in your own words. Shown to the agent. */
     plan?: string;
     /** Anything else the agent may read as context. */
@@ -62,6 +65,22 @@ interface MessengerOptions {
     /** The signed-in customer, if any. Can also be given later with `identify()`. */
     user?: User;
 }
+/**
+ * What `update()` changes once the messenger is on the page, without
+ * reloading it. A key left out keeps its value; `null` hands it back to the
+ * workspace's setting in Settings → Messenger, or to the default where there
+ * is none.
+ */
+interface UpdateOptions {
+    /** Draw our launcher (`true`), or leave the corner to a button of your own (`false`). */
+    launcher?: boolean | null;
+    alignment?: Alignment | null;
+    /** Distance from the corner, in px. Floors at 20. */
+    padding?: {
+        x?: number | null;
+        y?: number | null;
+    } | null;
+}
 interface MessengerState {
     /** The messenger has booted and is listening. */
     ready: boolean;
@@ -90,6 +109,13 @@ interface Messenger {
     toggle(): void;
     /** Tell the messenger who is signed in. Safe to call before it is ready. */
     identify(user: User): void;
+    /**
+     * Move the messenger, or take our launcher away and bring it back, without
+     * reloading it: a route that wants the bubble gone, a page that wants it on
+     * the other side, a phone that wants it higher. Safe to call before it is
+     * ready.
+     */
+    update(options: UpdateOptions): void;
     /** Remove the messenger from the page entirely. `load()` may be called again after. */
     destroy(): void;
     /** Listen for an event. Returns the function that stops listening. */
@@ -112,6 +138,7 @@ interface LoaderApi {
     open?(): void;
     close?(): void;
     toggle?(): void;
+    update?(options: Record<string, unknown>): void;
     getState?(): MessengerState;
     on?(name: string, handler: (detail: unknown) => void): () => void;
     off?(name: string, handler: (detail: unknown) => void): void;
@@ -136,4 +163,4 @@ declare function load(options: MessengerOptions): Messenger;
 /** The instance `load()` created, if the page has one. */
 declare function get(): Messenger | null;
 
-export { type Alignment, DEFAULT_ORIGIN, type Locale, type Messenger, type MessengerEvent, type MessengerEvents, type MessengerOptions, type MessengerState, type Theme, type Unsubscribe, type User, get, load };
+export { type Alignment, DEFAULT_ORIGIN, type Locale, type Messenger, type MessengerEvent, type MessengerEvents, type MessengerOptions, type MessengerState, type Theme, type Unsubscribe, type UpdateOptions, type User, get, load };

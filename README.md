@@ -21,9 +21,9 @@
 
 | Package                                   | For                     | Size (min+br) |
 | ----------------------------------------- | ----------------------- | ------------- |
-| [`@goya24/messenger`](packages/messenger) | Any site, any framework | ~1.4 kB       |
-| [`@goya24/react`](packages/react)         | React **and Next.js**   | ~0.9 kB       |
-| [`@goya24/vue`](packages/vue)             | Vue 3                   | ~0.5 kB       |
+| [`@goya24/messenger`](packages/messenger) | Any site, any framework | ~1.8 kB       |
+| [`@goya24/react`](packages/react)         | React **and Next.js**   | ~1.1 kB       |
+| [`@goya24/vue`](packages/vue)             | Vue 3                   | ~0.6 kB       |
 | [`@goya24/nuxt`](packages/nuxt)           | Nuxt 3                  | module        |
 
 All four share one version line. The wrappers are thin: everything they do, `@goya24/messenger` does, and the messenger itself is served by goya24 — the SDK never carries a copy of the UI, so a fix on the server reaches every site without a redeploy.
@@ -153,6 +153,7 @@ load({
     hash: "<HMAC-SHA256 of the id, computed on your server>",
     email: "sara@example.com",
     name: "Sara",
+    phone: "09123456789",
     plan: "growth",
     traits: { orders: 12 },
   },
@@ -175,7 +176,7 @@ Puts the messenger on the page, or adopts one the site's script tag already inst
 | `origin`    | `string`                     | `https://goya24.com` |
 | `locale`    | `"fa" \| "en"`               | the page's `lang`    |
 | `theme`     | `"light" \| "dark"`          | the page's scheme    |
-| `alignment` | `"left" \| "right"`          | `"right"`            |
+| `alignment` | `"left" \| "right"`          | the workspace's      |
 | `padding`   | `{ x?: number; y?: number }` | `20`                 |
 | `launcher`  | `boolean`                    | `true`               |
 | `user`      | `User`                       | —                    |
@@ -199,12 +200,41 @@ A runnable page of exactly this — a site with its own open and close buttons i
 
 On a phone the panel is the whole screen, as in every messenger, so your button is not reachable while it is open; the panel's own close button is the way out there.
 
+### Changing it after load
+
+The messenger loads once and, in a single-page app, stays with the visitor from page to page. `update()` moves it, or takes our launcher away and brings it back, without reloading it, so a conversation in progress stays where it is. `get()` returns the page's messenger from anywhere, including a page that did not load it.
+
+```ts
+import { get } from "@goya24/messenger";
+
+// The app page: no bubble. Back on the home page: the bubble again.
+get()?.update({ launcher: false });
+get()?.update({ launcher: true });
+
+// One page wants it on the left, above its cart bar.
+get()?.update({ alignment: "left", padding: { y: 96 } });
+
+// By device, with your own media query.
+const phone = window.matchMedia("(max-width: 640px)");
+const place = () => get()?.update({ padding: { y: phone.matches ? 88 : 20 } });
+phone.addEventListener("change", place);
+place();
+
+// Hand both back to Settings → Messenger.
+get()?.update({ alignment: null, padding: null });
+```
+
+A key you leave out keeps its value; `null` hands it back. What decides, each over the one before: the defaults (bottom right, 20px, our launcher drawn), the position the workspace chose in _Settings → Messenger_, the options given to `load()` or the script tag's attributes, and `update()`. Phones follow the same rules: unset, a phone keeps bottom right, and the open panel there is the whole screen whatever the padding.
+
+In React the `launcher`, `alignment` and `padding` props do this: change one and the messenger that is already there moves, with no reload. `useGoya24().update()` does it from any component under the provider, and in Vue `useGoya24().update()` from any component.
+
 ### `Messenger`
 
 | Member                            | What it does                                                             |
 | --------------------------------- | ------------------------------------------------------------------------ |
 | `open()` / `close()` / `toggle()` | Show or hide the panel.                                                  |
 | `identify(user)`                  | Tell the messenger who is signed in. Safe before it is ready.            |
+| `update(options)`                 | Move it, or hide and show our launcher, without a reload. See above.     |
 | `on(event, handler)`              | Listen; returns the unsubscribe function.                                |
 | `getState()`                      | `{ ready, open, unread }` right now.                                     |
 | `ready`                           | A promise that resolves once the messenger has booted. It never rejects. |

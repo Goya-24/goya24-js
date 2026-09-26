@@ -17,6 +17,7 @@ function fakeMessenger() {
     close: vi.fn(),
     toggle: vi.fn(),
     identify: vi.fn(),
+    update: vi.fn(),
     destroy: vi.fn(),
     getState: () => ({ ...state }),
     ready: Promise.resolve(),
@@ -80,13 +81,58 @@ describe("<Goya24 />", () => {
   });
 
   it("passes launcher={false} on, and says nothing when it is left alone", () => {
-    const { rerender } = render(<Goya24 workspaceKey="d24_pk_abc" launcher={false} />);
+    render(<Goya24 workspaceKey="d24_pk_abc" launcher={false} />);
     expect(load).toHaveBeenLastCalledWith({ key: "d24_pk_abc", launcher: false });
+    expect(messenger.update).not.toHaveBeenCalled();
+  });
 
-    // Putting our launcher back is a different messenger: it has to reload.
+  it("hides and shows our launcher on the messenger already there, without a reload", () => {
+    // The shop's case: shown on the home page, gone on the app page, back
+    // again — one messenger the whole way, so an open conversation stays.
+    const { rerender } = render(<Goya24 workspaceKey="d24_pk_abc" />);
+    rerender(<Goya24 workspaceKey="d24_pk_abc" launcher={false} />);
+    expect(messenger.update).toHaveBeenLastCalledWith({ launcher: false });
+
+    // Left alone again: handed back, the same as never having passed it.
     rerender(<Goya24 workspaceKey="d24_pk_abc" />);
-    expect(load).toHaveBeenLastCalledWith({ key: "d24_pk_abc" });
+    expect(messenger.update).toHaveBeenLastCalledWith({ launcher: null });
+
+    expect(load).toHaveBeenCalledOnce();
+    expect(messenger.destroy).not.toHaveBeenCalled();
+  });
+
+  it("moves the messenger when alignment or padding change, sending only what changed", () => {
+    const { rerender } = render(
+      <Goya24 workspaceKey="d24_pk_abc" alignment="left" padding={{ x: 24 }} />,
+    );
+    // A new object with the same numbers is not a change.
+    rerender(<Goya24 workspaceKey="d24_pk_abc" alignment="left" padding={{ x: 24 }} />);
+    expect(messenger.update).not.toHaveBeenCalled();
+
+    rerender(<Goya24 workspaceKey="d24_pk_abc" alignment="right" padding={{ x: 24 }} />);
+    expect(messenger.update).toHaveBeenLastCalledWith({ alignment: "right" });
+
+    rerender(<Goya24 workspaceKey="d24_pk_abc" alignment="right" padding={{ x: 24, y: 96 }} />);
+    expect(messenger.update).toHaveBeenLastCalledWith({ padding: { x: 24, y: 96 } });
+
+    rerender(<Goya24 workspaceKey="d24_pk_abc" />);
+    expect(messenger.update).toHaveBeenLastCalledWith({
+      alignment: null,
+      padding: { x: null, y: null },
+    });
+    expect(load).toHaveBeenCalledOnce();
+  });
+
+  it("a new workspace reloads with the layout of the moment, and sends no update", () => {
+    const { rerender } = render(<Goya24 workspaceKey="d24_pk_one" alignment="left" />);
+    rerender(<Goya24 workspaceKey="d24_pk_two" alignment="right" launcher={false} />);
     expect(load).toHaveBeenCalledTimes(2);
+    expect(load).toHaveBeenLastCalledWith({
+      key: "d24_pk_two",
+      alignment: "right",
+      launcher: false,
+    });
+    expect(messenger.update).not.toHaveBeenCalled();
   });
 
   it("does not reload when only callbacks change, and destroys on unmount", () => {
@@ -184,6 +230,21 @@ describe("useGoya24()", () => {
 
     screen.getByText("toggle").click();
     expect(messenger.toggle).toHaveBeenCalledOnce();
+  });
+
+  it("lets a page under the provider move the messenger or hide our launcher", () => {
+    function AppPage() {
+      const { update } = useGoya24();
+      return <button onClick={() => update({ launcher: false })}>app page</button>;
+    }
+    render(
+      <Goya24Provider workspaceKey="d24_pk_abc">
+        <AppPage />
+      </Goya24Provider>,
+    );
+    screen.getByText("app page").click();
+    expect(messenger.update).toHaveBeenCalledWith({ launcher: false });
+    expect(load).toHaveBeenCalledOnce();
   });
 
   it("throws outside a provider, with a sentence that says what to do", () => {

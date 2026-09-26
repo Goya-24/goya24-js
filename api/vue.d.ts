@@ -1,6 +1,6 @@
 import { Ref, Plugin, InjectionKey } from 'vue';
-import { User, MessengerState, MessengerOptions } from '@goya24/messenger';
-export { Alignment, Locale, Messenger, MessengerEvent, MessengerEvents, MessengerOptions, MessengerState, Theme, User } from '@goya24/messenger';
+import { User, UpdateOptions, MessengerState, MessengerOptions } from '@goya24/messenger';
+export { Alignment, Locale, Messenger, MessengerEvent, MessengerEvents, MessengerOptions, MessengerState, Theme, UpdateOptions, User } from '@goya24/messenger';
 
 interface Goya24 {
     open: () => void;
@@ -8,6 +8,12 @@ interface Goya24 {
     toggle: () => void;
     /** Tell the messenger who is signed in. Prefer `user` in the plugin options for a proven identity. */
     identify: (user: User) => void;
+    /**
+     * Move the messenger, or take our launcher away and bring it back, without
+     * reloading it — from a route's `setup()` that wants the bubble gone while
+     * it is on screen, say. The plugin's options are where it starts.
+     */
+    update: (options: UpdateOptions) => void;
     /** The messenger's state, reactive: `ready`, `open`, `unread`. */
     state: Readonly<Ref<MessengerState>>;
     /** Remove the messenger from the page. The plugin does this when the app unmounts. */

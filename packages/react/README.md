@@ -1,6 +1,6 @@
 # @goya24/react
 
-The [goya24](https://goya24.com) support messenger for React and Next.js. A component that mounts it, a provider and a hook that control it. ~0.9 kB on top of `@goya24/messenger`.
+The [goya24](https://goya24.com) support messenger for React and Next.js. A component that mounts it, a provider and a hook that control it. ~1.1 kB on top of `@goya24/messenger`.
 
 ```sh
 npm i @goya24/react
@@ -30,6 +30,8 @@ function SupportButton() {
 ```
 
 The package is a client module (`"use client"`), so it drops straight into a Next.js App Router layout. Props mirror the core's options (`origin`, `locale`, `theme`, `alignment`, `padding`, `launcher`, `user`) plus `onReady`, `onOpen`, `onClose`, `onUnread(count)` and `onError(reason)`. Changing `user` after mount announces the new person as a claim; a proven identity (`id` + `hash`) has to be present at mount.
+
+Changing `launcher`, `alignment` or `padding` moves the messenger that is already on the page — no reload, so an open conversation stays. A route that wants our bubble gone passes `launcher={false}` while it is on screen; dropping a prop hands it back to the workspace's setting. From a component under the provider, `useGoya24().update({ launcher: false })` does the same.
 
 Full documentation in the [repository README](https://github.com/Goya-24/goya24-js#readme).
 
