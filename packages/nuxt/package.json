@@ -1,6 +1,6 @@
 {
   "name": "@goya24/nuxt",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Nuxt module for the goya24 support messenger: the key from nuxt.config or the environment, the messenger in the browser, `useGoya24()` everywhere — server rendering included.",
   "license": "MIT",
   "author": "Goya24",
