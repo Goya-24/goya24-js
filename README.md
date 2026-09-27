@@ -139,7 +139,7 @@ export default defineNuxtConfig({
 });
 ```
 
-Set the key in the environment as `NUXT_PUBLIC_GOYA24_KEY` (or as `goya24.key` in the config). `useGoya24()` from `@goya24/vue` works in every component; the plugin runs on the client only.
+Set the key in the environment as `NUXT_PUBLIC_GOYA24_KEY` (or as `goya24.key` in the config); a site built with `nuxt generate` needs it at build time. `useGoya24()` from `@goya24/vue` works in every component, including during server rendering; the messenger itself only loads in the browser.
 
 ## Identifying the signed-in customer
 

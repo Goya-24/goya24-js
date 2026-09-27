@@ -1,7 +1,7 @@
 {
   "name": "@goya24/nuxt",
   "version": "0.3.0",
-  "description": "Nuxt module for the goya24 support messenger: the key from runtime config, the plugin on the client, `useGoya24()` everywhere.",
+  "description": "Nuxt module for the goya24 support messenger: the key from nuxt.config or the environment, the messenger in the browser, `useGoya24()` everywhere — server rendering included.",
   "license": "MIT",
   "author": "Goya24",
   "homepage": "https://github.com/Goya-24/goya24-js/tree/main/packages/nuxt#readme",
@@ -64,6 +64,7 @@
     "nuxt": "^3.15.0"
   },
   "peerDependencies": {
-    "nuxt": ">=3.8"
+    "nuxt": ">=3.8",
+    "vue": ">=3.3"
   }
 }

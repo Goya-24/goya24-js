@@ -22,7 +22,7 @@ Put the key in the environment:
 NUXT_PUBLIC_GOYA24_KEY=d24_pk_…
 ```
 
-Everything under `goya24` in the config ends up in `runtimeConfig.public.goya24`, so any field can also be set from the environment as `NUXT_PUBLIC_GOYA24_<FIELD>`. The plugin runs on the client only; there is no page to put a frame on during server rendering.
+`key`, `origin`, `locale`, `theme`, `alignment` and `launcher` can each come from the environment as `NUXT_PUBLIC_GOYA24_<FIELD>`, and a variable wins over `nuxt.config`. They are read when the server starts. A site generated to static files with `nuxt generate` has no server, so there they must be set when it is built.
 
 In components:
 
@@ -32,6 +32,8 @@ import { useGoya24 } from "@goya24/vue";
 const { open, state } = useGoya24();
 </script>
 ```
+
+`useGoya24()` works in any component, including while the page is rendered on the server. The messenger itself only ever loads in the browser; on the server the handle does nothing and `state` says not ready yet. Without a key the messenger never loads, the browser console says so once, and the page still renders.
 
 Full documentation in the [repository README](https://github.com/Goya-24/goya24-js#readme).
 
