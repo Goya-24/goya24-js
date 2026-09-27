@@ -80,3 +80,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm examples:build
+      - name: Run the Nuxt examples
+        # Built is not working. Each Nuxt example starts with the key only in
+        # the environment, and its page must answer 200 with the key in it:
+        # both failed for as long as CI only built them.
+        run: pnpm examples:smoke
