@@ -58,7 +58,7 @@ jobs:
         if: matrix.node == 20
         run: pnpm publish:check
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v7
         if: matrix.node == 20
         with:
           files: ./coverage/lcov.info
